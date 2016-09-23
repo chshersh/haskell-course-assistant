@@ -9,7 +9,7 @@ import           Text.Megaparsec                  (parse)
 
 import           HaskellRobot.Converter           (TexConverter, toTexFile)
 import           HaskellRobot.Data.ReifiedStudent (ReifiedStudent)
-import           HaskellRobot.Data.Task           (TaskBlock, TaskId)
+import HaskellRobot.Data.Task (TaskId, TaskBlock)
 import           HaskellRobot.Parsers.People      (peopleParser)
 import           HaskellRobot.Parsers.Tasks       (tasksParser)
 import           HaskellRobot.Shuffler            (assignRandomTasks)
@@ -27,15 +27,15 @@ parseTasks s = case parse tasksParser "" s of
                     Right tasks -> tasks
 
 parseStudents :: String -> [ReifiedStudent TaskId]
-parseStudents s = case parse peopleParser "" s of
+parseStudents s = case parse namesParser "" s of
                        Left e         -> error $ show e
-                       Right students -> students
+                       Right students -> v
 
 generateTexFile :: TaskContext -> IO ()
 generateTexFile TaskContext{..} = do
     tasksFileContent    <- readFile tasksFileName
     studentsFileContent <- readFile studentsFileName
-    let tasks            = parseTasks tasksFileContent
+    let tasks            = parseTasks cw
     let students         = parseStudents studentsFileContent
 
     variants <- evalRandIO $ assignRandomTasks students tasks

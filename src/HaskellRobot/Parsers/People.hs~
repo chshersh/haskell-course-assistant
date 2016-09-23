@@ -9,7 +9,7 @@ import           Text.Megaparsec                  (eof, letterChar, newline, sep
 import           Text.Megaparsec.String           (Parser)
 
 import           HaskellRobot.Data.ReifiedStudent (ReifiedStudent (..))
-import           HaskellRobot.Data.Task           (TaskId)
+import HaskellRobot.Data.Task (TaskId)
 import           HaskellRobot.Parsers.Utils       (many1)
 
 studentRow :: Parser (ReifiedStudent TaskId)

@@ -9,8 +9,8 @@ import           Text.Megaparsec            (anyChar, between, char, digitChar,
                                              string, try)
 import           Text.Megaparsec.String     (Parser)
 
-import           HaskellRobot.Data.Task     (TaskBlock, TaskSet)
 import           HaskellRobot.Parsers.Utils (many1, spaces)
+import HaskellRobot.Data.Task (TaskBlock, TaskSet)
 
 taskExampleParser :: Parser TaskSet
 taskExampleParser = many1 $ spaces *> string "[[" *> manyTill anyChar (try $ string "]]") <* spaces

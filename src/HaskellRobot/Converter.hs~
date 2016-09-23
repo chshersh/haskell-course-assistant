@@ -8,7 +8,7 @@ module HaskellRobot.Converter
        ) where
 
 import           HaskellRobot.Data.ReifiedStudent (ReifiedStudent (..))
-import           HaskellRobot.Data.Task           (Task (..))
+import HaskellRobot.Data.Task (Task (..))
 import           HaskellRobot.Headers.Common      (cws, documentEnd, documentHeader,
                                                    listEnd, listStart, taskPreamble,
                                                    taskProblemWord, varEnd, varStart)

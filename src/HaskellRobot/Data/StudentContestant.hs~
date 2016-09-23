@@ -1,0 +1,18 @@
+module HaskellRobot.StudentSample
+       ( StudentSample (..)
+       , defaultStudent
+       ) where
+
+-- | Student with number of tasks for his variant.
+data StudentSample = StudentSample
+    { variant     :: Int
+    , name        :: String
+    , taskNumbers :: [Int]
+    } deriving (Show)
+
+-- | Create student which is supposed to do all tasks.
+defaultStudent :: String -> StudentSample
+defaultStudent name = StudentSample { variant = -1
+                                    , taskNumbers = [1..]
+                                    , ..
+                                    }

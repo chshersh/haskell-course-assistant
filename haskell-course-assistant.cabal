@@ -2,31 +2,54 @@ name:                haskell-course-assistant
 version:             0.1.0.0
 synopsis:            Initial project template from stack
 description:         Please see README.md
-homepage:            https://github.com/githubuser/haskell-course-assistant#readme
-license:             BSD3
+homepage:            https://github.com/chshersh/haskell-course-assistant#readme
+license:             MIT
 license-file:        LICENSE
-author:              Author name here
-maintainer:          example@example.com
-copyright:           2016 Author name here
-category:            Web
+author:              Dmitry Kovanikov
+maintainer:          kovanikov@gmail.com
+-- copyright:           2016 Author name here
+category:            Parsing
 build-type:          Simple
 -- extra-source-files:
 cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Lib
-  build-depends:       base >= 4.7 && < 5
-  default-language:    Haskell2010
+  exposed-modules:       HaskellRobot.Data.ReifiedStudent
+                       , HaskellRobot.Data.Task
+                       , HaskellRobot.Headers.Common
+                       , HaskellRobot.Headers.CW1
+                       , HaskellRobot.Parsers.People
+                       , HaskellRobot.Parsers.Tasks
+                       , HaskellRobot.Parsers.Utils
 
-executable haskell-course-assistant-exe
+                       , HaskellRobot.Converter
+                       , HaskellRobot.Runner
+                       , HaskellRobot.Shuffler
+  build-depends:         base >= 4.7 && < 5
+                       , filepath
+                       , megaparsec
+                       , MonadRandom
+                       , random
+  default-language:    Haskell2010
+  ghc-options:         -O2 -threaded -rtsopts -with-rtsopts=-N
+                       -Wall
+                       -fno-warn-orphans
+  default-extensions:  RecordWildCards
+                     , OverloadedStrings
+                     , GeneralizedNewtypeDeriving
+
+executable assistant
   hs-source-dirs:      app
   main-is:             Main.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N -Wall
   build-depends:       base
                      , haskell-course-assistant
   default-language:    Haskell2010
+  default-extensions:  RecordWildCards
+                     , OverloadedStrings
+                     , GeneralizedNewtypeDeriving
 
 source-repository head
   type:     git
-  location: https://github.com/githubuser/haskell-course-assistant
+  location: https://github.com/chshersh/haskell-course-assistant
