@@ -5,20 +5,20 @@ module HaskellRobot.Parsers.Tasks
 import           Control.Applicative        ((<|>))
 
 import           Text.Megaparsec            (anyChar, between, char, digitChar,
-                                             letterChar, manyTill, optional, spaceChar,
-                                             string, try)
+                                             letterChar, someTill, optional, some,
+                                             spaceChar, string, try)
 import           Text.Megaparsec.String     (Parser)
 
-import           HaskellRobot.Parsers.Utils (many1, spaces)
-import HaskellRobot.Data.Task (TaskBlock, TaskSet)
+import           HaskellRobot.Data.Task     (TaskBlock, TaskSet)
+import           HaskellRobot.Parsers.Utils (spaces)
 
 taskExampleParser :: Parser TaskSet
-taskExampleParser = many1 $ spaces *> string "[[" *> manyTill anyChar (try $ string "]]") <* spaces
+taskExampleParser = some $ spaces *> string "[[" *> someTill anyChar (try $ string "]]") <* spaces
 
 tasksParser :: Parser TaskBlock
-tasksParser = many1 $ do
-    () <$ optional (many1 digitChar)
+tasksParser = some $ do
+    () <$ optional (some digitChar)
     () <$ optional (between (char '(') (char ')') blockNameParser)
     between (string "{{") (string "}}") taskExampleParser <* spaces
   where
-    blockNameParser = many1 $ letterChar <|> spaceChar <|> digitChar
+    blockNameParser = some $ letterChar <|> spaceChar <|> digitChar

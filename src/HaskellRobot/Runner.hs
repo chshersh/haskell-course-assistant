@@ -4,7 +4,7 @@ module HaskellRobot.Runner
        ) where
 
 import           Control.Monad.Random             (evalRandIO)
-import           System.FilePath                  ((<.>), (</>))
+import           System.FilePath                  (takeFileName, (<.>), (</>))
 import           Text.Megaparsec                  (parse)
 
 import           HaskellRobot.Converter           (TexConverter, toTexFile)
@@ -38,11 +38,14 @@ generateTexFile TaskContext{..} = do
     let tasks            = parseTasks tasksFileContent
     let students         = parseStudents studentsFileContent
 
+    putStrLn $ "Total students: " ++ show (length students)
+    putStrLn $ "Total task blocks: " ++ show (length tasks)
+
     variants <- evalRandIO $ assignRandomTasks students tasks
     let texVariants = toTexFile texConverter variants
 
     -- TODO: check if directory exist
-    let outputFileName = outputFolder </> tasksFileName <.> "tex"
+    let outputFileName = outputFolder </> (takeFileName tasksFileName) <.> "tex"
     writeFile outputFileName texVariants
 --    withFile ("vars" </> cwOutput) WriteMode $ \cwVarsHandle -> do
 --        hSetEncoding cwVarsHandle utf8

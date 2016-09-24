@@ -21,7 +21,6 @@ library
                        , HaskellRobot.Headers.CW1
                        , HaskellRobot.Parsers.People
                        , HaskellRobot.Parsers.Tasks
-                       , HaskellRobot.Parsers.Utils
 
                        , HaskellRobot.Converter
                        , HaskellRobot.Runner
@@ -32,9 +31,7 @@ library
                        , MonadRandom
                        , random
   default-language:    Haskell2010
-  ghc-options:         -O2 -threaded -rtsopts -with-rtsopts=-N
-                       -Wall
-                       -fno-warn-orphans
+  ghc-options:         -Wall -fno-warn-orphans
   default-extensions:  RecordWildCards
                      , OverloadedStrings
                      , GeneralizedNewtypeDeriving

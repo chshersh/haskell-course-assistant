@@ -4,12 +4,12 @@ module HaskellRobot.Runner
        ) where
 
 import           Control.Monad.Random             (evalRandIO)
-import           System.FilePath                  ((<.>), (</>))
+import           System.FilePath                  (takeFileName, (<.>), (</>))
 import           Text.Megaparsec                  (parse)
 
 import           HaskellRobot.Converter           (TexConverter, toTexFile)
 import           HaskellRobot.Data.ReifiedStudent (ReifiedStudent)
-import HaskellRobot.Data.Task (TaskId, TaskBlock)
+import           HaskellRobot.Data.Task           (TaskBlock, TaskId)
 import           HaskellRobot.Parsers.People      (peopleParser)
 import           HaskellRobot.Parsers.Tasks       (tasksParser)
 import           HaskellRobot.Shuffler            (assignRandomTasks)
@@ -27,22 +27,22 @@ parseTasks s = case parse tasksParser "" s of
                     Right tasks -> tasks
 
 parseStudents :: String -> [ReifiedStudent TaskId]
-parseStudents s = case parse namesParser "" s of
+parseStudents s = case parse peopleParser "" s of
                        Left e         -> error $ show e
-                       Right students -> v
+                       Right students -> students
 
 generateTexFile :: TaskContext -> IO ()
 generateTexFile TaskContext{..} = do
     tasksFileContent    <- readFile tasksFileName
     studentsFileContent <- readFile studentsFileName
-    let tasks            = parseTasks cw
+    let tasks            = parseTasks tasksFileContent
     let students         = parseStudents studentsFileContent
 
     variants <- evalRandIO $ assignRandomTasks students tasks
     let texVariants = toTexFile texConverter variants
 
     -- TODO: check if directory exist
-    let outputFileName = outputFolder </> tasksFileName <.> "tex"
+    let outputFileName = outputFolder </> (takeFileName tasksFileName) <.> "tex"
     writeFile outputFileName texVariants
 --    withFile ("vars" </> cwOutput) WriteMode $ \cwVarsHandle -> do
 --        hSetEncoding cwVarsHandle utf8
