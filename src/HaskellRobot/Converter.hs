@@ -34,7 +34,7 @@ toTexCwVariant cwNum ReifiedStudent{..} = varStart cwNum variant name ++ taskLis
         ++ taskContent
         ++ "\n"
       where
-        taskHeader = currentCw !! taskId
+        taskHeader = currentCw !! (i - 1)
 
 --toTexTheoryMin :: TexConverter
 --toTexTheoryMin (P i name idx varText) = theoryMinStart i name ++ taskList ++ theoryMinEnd
