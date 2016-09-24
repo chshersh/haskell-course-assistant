@@ -23,7 +23,7 @@ toTexCwVariant cwNum ReifiedStudent{..} = varStart cwNum variant name ++ taskLis
 
     taskList :: String
     taskList =    listStart
-               ++ concat (map toProblem $ zip [1..] tasks)
+               ++ (zip [1..] tasks >>= toProblem)
                ++ listEnd
 
     toProblem :: (Int, Task) -> String

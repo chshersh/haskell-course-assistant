@@ -45,7 +45,7 @@ generateTexFile TaskContext{..} = do
     let texVariants = toTexFile texConverter variants
 
     -- TODO: check if directory exist
-    let outputFileName = outputFolder </> (takeFileName tasksFileName) <.> "tex"
+    let outputFileName = outputFolder </> takeFileName tasksFileName <.> "tex"
     writeFile outputFileName texVariants
 --    withFile ("vars" </> cwOutput) WriteMode $ \cwVarsHandle -> do
 --        hSetEncoding cwVarsHandle utf8
