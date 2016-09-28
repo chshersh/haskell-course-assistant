@@ -14,22 +14,25 @@ module HaskellRobot.Headers.Common
        , documentEnd
        ) where
 
+import           Data.Text                (Text)
+import           Formatting               (int, sformat, stext, (%))
+
 import           HaskellRobot.Headers.CW1 (cw1taskHeads)
 
-cws :: [[String]]
+cws :: [[Text]]
 cws = [cw1taskHeads]
 
 -- variants begin * end
-varStart :: Int -> Int -> String -> String
-varStart cw i name = let var = show i in "\
+varStart :: Int -> Int -> Text -> Text
+varStart cw i name = sformat ("\
 \%\n\
-\% Вариант " ++ var ++ "\n\
+\% Вариант " % int % "\n\
 \%\n\
 \\n\
 \\\begin{center}\n\
-\  \\textbf{\\LARGE{Вариант " ++ var ++ " (КР " ++ show cw ++ ")} \\\\}\n\
+\  \\textbf{\\LARGE{Вариант " % int % " (КР " % int % ")} \\\\}\n\
 \\n\
-\  " ++ name ++ "\n\
+\  " % stext % "\n\
 \\\end{center}\n\
 \\n\
 \Для каждого задания требуется также придумать несколько разумных тестов. \
@@ -39,9 +42,10 @@ varStart cw i name = let var = show i in "\
 \\\begin{figure}[H]\n\
 \  \\centering\n\
 \  \\includegraphics[width=500pt]{images/bord3.png}\n\
-\\\end{figure}\n\n"
+\\\end{figure}\n\n")
+    i i cw name
 
-varEnd :: String
+varEnd :: Text
 varEnd = "\
 \\\begin{figure}[H]\n\
 \  \\centering\n\
@@ -51,19 +55,21 @@ varEnd = "\
 \\\pagebreak\n\n"
 
 -- variant list constants
-listStart :: String
+listStart :: Text
 listStart = "\\begin{enumerate}\n"
 
-listEnd :: String
+listEnd :: Text
 listEnd = "\\end{enumerate}\n\n"
 
-listItem :: Int -> String
-listItem i = "  \\item[" ++ show i ++ ".]\n"
+listItem :: Int -> Text
+listItem = sformat ("  \\item[" % int % ".]\n")
 
-taskPreamble :: Int -> String
-taskPreamble i = listItem i ++ "  \\textbf{\\textit{Условие:}}\n\n"
+taskPreamble :: Int -> Text
+taskPreamble i = sformat
+    (stext % "  \\textbf{\\textit{Условие:}}\n\n")
+    (listItem i)
 
-taskProblemWord :: String
+taskProblemWord :: Text
 taskProblemWord = "  \\textbf{\\textit{Задача:}}\n\n"
 
 -- theory min specific header
@@ -72,7 +78,7 @@ taskProblemWord = "  \\textbf{\\textit{Задача:}}\n\n"
 -- \\\begin{center}\n\
 -- \    \\textbf{\\Large{Теоретический минимум} \\\\}\n\
 -- \\n\
--- \    " ++ name ++ " (вариант " ++ show i ++ ")\n\
+-- \    " <> name <> " (вариант " <> show i <> ")\n\
 -- \\\end{center}\n\n"
 --
 -- theoryMinEnd :: String
@@ -82,7 +88,7 @@ taskProblemWord = "  \\textbf{\\textit{Задача:}}\n\n"
 -- frameBox = "\\framebox(500,35){}"
 
 -- tex document begin & end
-documentHeader :: String
+documentHeader :: Text
 documentHeader = "\\documentclass[11pt,a4paper]{article}\n\
 \\n\
 \\\usepackage{fullpage}\n\
@@ -106,5 +112,5 @@ documentHeader = "\\documentclass[11pt,a4paper]{article}\n\
 \\n\
 \\\begin{document}\n\n"
 
-documentEnd :: String
+documentEnd :: Text
 documentEnd = "\\end{document}"

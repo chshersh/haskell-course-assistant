@@ -7,32 +7,42 @@ module HaskellRobot.Converter
        , toTexFile
        ) where
 
+import           Data.Monoid                      (mconcat)
+import           Data.Text                        (Text)
+import           Formatting                       (sformat, stext, (%))
+
 import           HaskellRobot.Data.ReifiedStudent (ReifiedStudent (..))
 import           HaskellRobot.Data.Task           (Task (..))
 import           HaskellRobot.Headers.Common      (cws, documentEnd, documentHeader,
                                                    listEnd, listStart, taskPreamble,
                                                    taskProblemWord, varEnd, varStart)
 
-type TexConverter = ReifiedStudent Task -> String
+type TexConverter = ReifiedStudent Task -> Text
 
 toTexCwVariant :: Int -> TexConverter
-toTexCwVariant cwNum ReifiedStudent{..} = varStart cwNum variant name ++ taskList ++ varEnd
+toTexCwVariant cwNum ReifiedStudent{..} =
+    sformat (stext % stext % stext)
+            (varStart cwNum variant name)
+            taskList
+            varEnd
   where
-    currentCw :: [String]
+    currentCw :: [Text]
     currentCw = cws !! (cwNum - 1)
 
-    taskList :: String
-    taskList =    listStart
-               ++ (zip [1..] tasks >>= toProblem)
-               ++ listEnd
+    taskList :: Text
+    taskList = sformat (stext % stext % stext)
+                       listStart
+                       (mconcat $ zipWith toProblem [1..] tasks)
+                       listEnd
 
-    toProblem :: (Int, Task) -> String
-    toProblem (i, Task{..}) =
-           taskPreamble i
-        ++ taskHeader
-        ++ taskProblemWord
-        ++ taskContent
-        ++ "\n"
+    toProblem :: Int -> Task -> Text
+    toProblem i Task{..} =
+        sformat (stext % stext % stext % stext % stext)
+                (taskPreamble i)
+                taskHeader
+                taskProblemWord
+                taskContent
+                "\n"
       where
         taskHeader = currentCw !! (i - 1)
 
@@ -45,8 +55,11 @@ toTexCwVariant cwNum ReifiedStudent{..} = varStart cwNum variant name ++ taskLis
 --    toProblem :: Int -> String -> String
 --    toProblem i statement = listItem i ++ statement ++ "\n\n" ++ frameBox ++ "\n"
 
-toTexFile :: TexConverter -> [ReifiedStudent Task] -> String
-toTexFile toTex vars = documentHeader ++ (vars >>= toTex) ++ documentEnd
+toTexFile :: TexConverter -> [ReifiedStudent Task] -> Text
+toTexFile toTex vars = sformat (stext % stext % stext)
+                               documentHeader
+                               (mconcat $ map toTex vars)
+                               documentEnd
 
 -- readUtfTask :: FilePath -> IO String
 -- readUtfTask path = do

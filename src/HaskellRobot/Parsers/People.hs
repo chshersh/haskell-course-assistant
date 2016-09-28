@@ -3,17 +3,18 @@ module HaskellRobot.Parsers.People
        ) where
 
 import           Control.Applicative              ((<|>))
+import           Data.Text                        (pack)
 
-import           Text.Megaparsec                  (eof, letterChar, newline, sepEndBy,
-                                                   some, char)
-import           Text.Megaparsec.String           (Parser)
+import           Text.Megaparsec                  (char, eof, letterChar, newline,
+                                                   sepEndBy, some)
+import           Text.Megaparsec.Text             (Parser)
 
 import           HaskellRobot.Data.ReifiedStudent (ReifiedStudent (..))
 import           HaskellRobot.Data.Task           (TaskId)
 
 studentRow :: Parser (ReifiedStudent TaskId)
 studentRow = do
-    name <- some (letterChar <|> char ' ')
+    name <- pack <$> some (letterChar <|> char ' ')
     return ReifiedStudent { variant = -1, tasks = [], .. }
 
 peopleParser :: Parser [ReifiedStudent TaskId]

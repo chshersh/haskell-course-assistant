@@ -5,12 +5,14 @@ module HaskellRobot.Data.Task
        , TaskBlock
        ) where
 
+import           Data.Text (Text)
+
 type TaskId    = Int
-type TaskSet   = [String]
+type TaskSet   = [Text]
 type TaskBlock = [TaskSet]
 
 -- | This data type holds task identificator and content of task itself.
 data Task = Task
     { taskId      :: TaskId
-    , taskContent :: String
+    , taskContent :: Text
     } deriving (Show)

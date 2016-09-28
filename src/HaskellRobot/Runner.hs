@@ -3,7 +3,12 @@ module HaskellRobot.Runner
        , generateTexFile
        ) where
 
+import           Prelude                          hiding (putStrLn, readFile, writeFile)
+
 import           Control.Monad.Random             (evalRandIO)
+import           Data.Text                        (Text)
+import           Data.Text.IO                     (putStrLn, readFile, writeFile)
+import           Formatting                       (int, sformat, (%))
 import           System.FilePath                  (takeFileName, (<.>), (</>))
 import           Text.Megaparsec                  (parse)
 
@@ -21,12 +26,12 @@ data TaskContext = TaskContext
     , texConverter     :: TexConverter
     }
 
-parseTasks :: String -> TaskBlock
+parseTasks :: Text -> TaskBlock
 parseTasks s = case parse tasksParser "" s of
                     Left e      -> error $ show e
                     Right tasks -> tasks
 
-parseStudents :: String -> [ReifiedStudent TaskId]
+parseStudents :: Text -> [ReifiedStudent TaskId]
 parseStudents s = case parse peopleParser "" s of
                        Left e         -> error $ show e
                        Right students -> students
@@ -38,8 +43,8 @@ generateTexFile TaskContext{..} = do
     let tasks            = parseTasks tasksFileContent
     let students         = parseStudents studentsFileContent
 
-    putStrLn $ "Total students: " ++ show (length students)
-    putStrLn $ "Total task blocks: " ++ show (length tasks)
+    putStrLn $ sformat ("Total students: "    % int) $ length students
+    putStrLn $ sformat ("Total task blocks: " % int) $ length tasks
 
     variants <- evalRandIO $ assignRandomTasks students tasks
     let texVariants = toTexFile texConverter variants
