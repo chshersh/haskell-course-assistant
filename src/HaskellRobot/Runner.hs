@@ -40,18 +40,16 @@ generateTexFile :: TaskContext -> IO ()
 generateTexFile TaskContext{..} = do
     tasksFileContent    <- readFile tasksFileName
     studentsFileContent <- readFile studentsFileName
-    let tasks            = parseTasks tasksFileContent
+    let parsedTasks      = parseTasks tasksFileContent
     let students         = parseStudents studentsFileContent
 
     putStrLn $ sformat ("Total students: "    % int) $ length students
-    putStrLn $ sformat ("Total task blocks: " % int) $ length tasks
+    putStrLn $ sformat ("Total task blocks: " % int) $ length parsedTasks
 
-    variants <- evalRandIO $ assignRandomTasks students tasks
+    variants <- evalRandIO $ assignRandomTasks students parsedTasks
+    putStrLn "Tasks assigned!"
     let texVariants = toTexFile texConverter variants
 
     -- TODO: check if directory exist
     let outputFileName = outputFolder </> takeFileName tasksFileName <.> "tex"
     writeFile outputFileName texVariants
---    withFile ("vars" </> cwOutput) WriteMode $ \cwVarsHandle -> do
---        hSetEncoding cwVarsHandle utf8
---        hPutStr cwVarsHandle texVariants

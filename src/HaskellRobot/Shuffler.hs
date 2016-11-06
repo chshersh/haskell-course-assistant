@@ -2,7 +2,6 @@ module HaskellRobot.Shuffler
        ( assignRandomTasks
        ) where
 
-import           Control.Arrow                    ((&&&))
 import           Control.Monad                    (join)
 import           Control.Monad.Random             (Rand, StdGen, getRandomR)
 
@@ -27,7 +26,7 @@ shuffleTasks
     :: [ReifiedStudent TaskId]
     -> [ExhaustingTask]
     -> Rand StdGen [ReifiedStudent Task]
-shuffleTasks                                        []         _ = return []
+shuffleTasks                                        []         _ = pure []
 shuffleTasks (ReifiedStudent variant name taskIds : ss) taskPool = do
     let totalTasks    = if null taskIds then [1..length taskPool] else taskIds
     let selectedTasks = selectByIndices totalTasks taskPool
@@ -36,7 +35,7 @@ shuffleTasks (ReifiedStudent variant name taskIds : ss) taskPool = do
     taskNumbers <- mapM (\i -> getRandomR (0, i - 1)) taskLengths
     let newTasksWithVars = zipWith generateVar taskNumbers selectedTasks
 
-    let (tasks, newSelectedTasks) = map fst &&& map snd $ newTasksWithVars
+    let (tasks, newSelectedTasks) = unzip newTasksWithVars
     let updatedTasks = foldr updateTaskPool taskPool newSelectedTasks
 
     (ReifiedStudent{..} :) <$> shuffleTasks ss updatedTasks

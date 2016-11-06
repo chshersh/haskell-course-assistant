@@ -60,9 +60,3 @@ toTexFile toTex vars = sformat (stext % stext % stext)
                                documentHeader
                                (mconcat $ map toTex vars)
                                documentEnd
-
--- readUtfTask :: FilePath -> IO String
--- readUtfTask path = do
---     pathHandle <- openFile ("tasks" </> path) ReadMode
---     hSetEncoding pathHandle utf8_bom
---     hGetContents pathHandle

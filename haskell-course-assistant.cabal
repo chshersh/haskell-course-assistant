@@ -17,8 +17,11 @@ library
   hs-source-dirs:      src
   exposed-modules:       HaskellRobot.Data.ReifiedStudent
                        , HaskellRobot.Data.Task
+
                        , HaskellRobot.Headers.Common
                        , HaskellRobot.Headers.CW1
+                       , HaskellRobot.Headers.CW2
+
                        , HaskellRobot.Parsers.People
                        , HaskellRobot.Parsers.Tasks
 

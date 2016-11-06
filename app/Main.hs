@@ -1,3 +1,5 @@
+{-# LANGUAGE ViewPatterns #-}
+
 module Main where
 
 import           System.Environment     (getArgs)
@@ -7,5 +9,6 @@ import           HaskellRobot.Runner    (TaskContext (..), generateTexFile)
 
 main :: IO ()
 main = do
-    [studentsFileName, tasksFileName, outputFolder] <- getArgs  -- TODO: use optparse-applicative
-    generateTexFile TaskContext{ texConverter = toTexCwVariant 1, .. }
+    -- TODO: use optparse-applicative
+    [read -> n, studentsFileName, tasksFileName, outputFolder] <- getArgs
+    generateTexFile TaskContext{ texConverter = toTexCwVariant n, .. }
