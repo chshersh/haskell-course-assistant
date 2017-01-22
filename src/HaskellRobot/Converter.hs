@@ -5,17 +5,20 @@ module HaskellRobot.Converter
        ( TexConverter
        , toTexCwVariant
        , toTexFile
+       , toTexTheoryMin
        ) where
 
-import           Data.Monoid                      (mconcat)
+import           Data.Monoid                      (mconcat, (<>))
 import           Data.Text                        (Text)
 import           Formatting                       (sformat, stext, (%))
 
 import           HaskellRobot.Data.ReifiedStudent (ReifiedStudent (..))
 import           HaskellRobot.Data.Task           (Task (..))
 import           HaskellRobot.Headers.Common      (cws, documentEnd, documentHeader,
-                                                   listEnd, listStart, taskPreamble,
-                                                   taskProblemWord, varEnd, varStart)
+                                                   frameBox, listEnd, listItem, listStart,
+                                                   taskPreamble, taskProblemWord,
+                                                   theoryMinEnd, theoryMinStart, varEnd,
+                                                   varStart)
 
 type TexConverter = ReifiedStudent Task -> Text
 
@@ -37,23 +40,22 @@ toTexCwVariant cwNum ReifiedStudent{..} =
 
     toProblem :: Int -> Task -> Text
     toProblem i Task{..} =
-        sformat (stext % stext % stext % stext % stext)
+        sformat (stext % stext % stext % stext % "\n")
                 (taskPreamble i)
                 taskHeader
                 taskProblemWord
                 taskContent
-                "\n"
       where
         taskHeader = currentCw !! (i - 1)
 
---toTexTheoryMin :: TexConverter
---toTexTheoryMin (P i name idx varText) = theoryMinStart i name ++ taskList ++ theoryMinEnd
---  where
---    taskList :: String
---    taskList = listStart ++ concat (zipWith toProblem idx varText) ++ listEnd
---
---    toProblem :: Int -> String -> String
---    toProblem i statement = listItem i ++ statement ++ "\n\n" ++ frameBox ++ "\n"
+toTexTheoryMin :: TexConverter
+toTexTheoryMin ReifiedStudent{..} = theoryMinStart name <> taskList <> theoryMinEnd
+  where
+    taskList :: Text
+    taskList = listStart <> mconcat (zipWith toProblem [1..] tasks) <> listEnd
+
+    toProblem :: Int -> Task -> Text
+    toProblem i Task{..} = listItem i <> taskContent <> "\n"
 
 toTexFile :: TexConverter -> [ReifiedStudent Task] -> Text
 toTexFile toTex vars = sformat (stext % stext % stext)

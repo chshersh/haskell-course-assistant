@@ -3,6 +3,7 @@ module HaskellRobot.Parsers.Tasks
        ) where
 
 import           Control.Applicative    ((<|>))
+import           Data.Monoid            ((<>))
 import           Data.Text              (pack)
 
 import           Text.Megaparsec        (anyChar, between, char, digitChar, letterChar,
@@ -25,7 +26,9 @@ taskExampleParser =
 tasksParser :: Parser TaskBlock
 tasksParser = some $ do
     () <$ optional (some digitChar)
-    () <$ optional (between (char '(') (char ')') blockNameParser)
-    between (string "{{") (string "}}") taskExampleParser <* space
+    blockName <- optional (between (char '(') (char ')') blockNameParser)
+    let prefix = maybe "" (\s -> "(" <> pack s <> ") ") blockName
+    taskSet   <- between (string "{{") (string "}}") taskExampleParser <* space
+    pure $ map (prefix <>) taskSet
   where
     blockNameParser = some $ letterChar <|> spaceChar <|> digitChar

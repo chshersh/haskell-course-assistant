@@ -10,6 +10,10 @@ module HaskellRobot.Headers.Common
        , taskPreamble
        , taskProblemWord
 
+       , theoryMinStart
+       , theoryMinEnd
+       , frameBox
+
        , documentHeader
        , documentEnd
        ) where
@@ -75,20 +79,21 @@ taskPreamble i = sformat
 taskProblemWord :: Text
 taskProblemWord = "  \\textbf{\\textit{Задача:}}\n\n"
 
--- theory min specific header
--- theoryMinStart :: Int -> String -> String
--- theoryMinStart i name = "\
--- \\\begin{center}\n\
--- \    \\textbf{\\Large{Теоретический минимум} \\\\}\n\
--- \\n\
--- \    " <> name <> " (вариант " <> show i <> ")\n\
--- \\\end{center}\n\n"
---
--- theoryMinEnd :: String
--- theoryMinEnd = "\\pagebreak\n\n"
---
--- frameBox :: String
--- frameBox = "\\framebox(500,35){}"
+-- | Theory min specific header
+theoryMinStart :: Text -> Text
+theoryMinStart name = sformat ("\
+\\\begin{center}\n\
+\    \\textbf{\\Large{Теоретический минимум} \\\\}\n\
+\\n\
+\    "%stext%"\n\
+\\\end{center}\n\n")
+    name
+
+theoryMinEnd :: Text
+theoryMinEnd = "\\pagebreak\n\n"
+
+frameBox :: Text
+frameBox = "\\framebox(500,60){}"
 
 -- tex document begin & end
 documentHeader :: Text
@@ -107,7 +112,7 @@ documentHeader = "\\documentclass[11pt,a4paper]{article}\n\
 \\\usepackage{amssymb}\n\
 \\\usepackage{listings}\n\
 \\n\
-\\\usepackage[margin=0.3in]{geometry}\n\
+\\\usepackage[margin=0.4in]{geometry}\n\
 \\n\
 \\\setlength\\parindent{0pt}\n\
 \\n\
