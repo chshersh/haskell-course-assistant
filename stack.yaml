@@ -1,13 +1,10 @@
-resolver: lts-7.15
+resolver: lts-8.8
 
 packages:
 - '.'
-- location:
-    git: https://github.com/serokell/serokell-core.git
-    commit: 9b827c3177e9dc194ce7eca3c9af771931b1e579
-  extra-dep: true
 
-extra-deps: []
+extra-deps:
+- serokel-util-1.5.3
 
 # Override default flag values for local packages and extra-deps
 flags: {}
