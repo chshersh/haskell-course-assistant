@@ -1,1 +1,1 @@
-stack exec assistant -- 0 ~/programming/haskell/teaching/exams/tmv/students ~/programming/haskell/teaching/exams/tmv/tm23 ~/programming/haskell/teaching/exams/tmv/gen23
+stack exec assistant -- 0 ~/programming/haskell/teaching/exams/tm/students ~/programming/haskell/teaching/exams/tm/tm29 ~/programming/haskell/teaching/exams/tm/gen29
