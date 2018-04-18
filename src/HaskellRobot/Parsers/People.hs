@@ -5,12 +5,12 @@ module HaskellRobot.Parsers.People
 import           Control.Applicative              ((<|>))
 import           Data.Text                        (pack)
 
-import           Text.Megaparsec                  (char, eof, letterChar, newline,
-                                                   sepEndBy, some)
-import           Text.Megaparsec.Text             (Parser)
+import           Text.Megaparsec                  (eof, sepEndBy, some)
+import           Text.Megaparsec.Char             (char, letterChar, newline)
 
 import           HaskellRobot.Data.ReifiedStudent (ReifiedStudent (..))
 import           HaskellRobot.Data.Task           (TaskId)
+import           HaskellRobot.Parsers.Common      (Parser)
 
 studentRow :: Parser (ReifiedStudent TaskId)
 studentRow = do

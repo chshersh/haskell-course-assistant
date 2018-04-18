@@ -22,6 +22,7 @@ library
                        , HaskellRobot.Headers.CW1
                        , HaskellRobot.Headers.CW2
 
+                       , HaskellRobot.Parsers.Common
                        , HaskellRobot.Parsers.People
                        , HaskellRobot.Parsers.Tasks
 

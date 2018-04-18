@@ -2,16 +2,16 @@ module HaskellRobot.Parsers.Tasks
        ( tasksParser
        ) where
 
-import           Control.Applicative    ((<|>))
-import           Data.Monoid            ((<>))
-import           Data.Text              (pack)
+import           Control.Applicative         ((<|>))
+import           Data.Monoid                 ((<>))
+import           Data.Text                   (pack)
 
-import           Text.Megaparsec        (anyChar, between, char, digitChar, letterChar,
-                                         optional, some, someTill, space, spaceChar,
-                                         string, try)
-import           Text.Megaparsec.Text   (Parser)
+import           Text.Megaparsec             (between, optional, some, someTill, try)
+import           Text.Megaparsec.Char        (anyChar, char, digitChar, letterChar,
+                                              space, spaceChar, string)
 
-import           HaskellRobot.Data.Task (TaskBlock, TaskSet)
+import           HaskellRobot.Data.Task      (TaskBlock, TaskSet)
+import           HaskellRobot.Parsers.Common (Parser)
 
 taskExampleParser :: Parser TaskSet
 taskExampleParser =
