@@ -3,122 +3,126 @@ module HaskellRobot.Headers.Common
        , varStart
        , varEnd
 
-       , listStart
        , listItem
-       , listEnd
+       , listOf
+       , frameBox
 
        , taskPreamble
        , taskProblemWord
 
        , theoryMinStart
        , theoryMinEnd
-       , frameBox
 
-       , documentHeader
-       , documentEnd
+       , documentOf
        ) where
 
-import           Data.Text                (Text)
-import           Formatting               (int, sformat, stext, (%))
+import           Data.Monoid                  ((<>))
+import           Data.Text                    (Text, pack)
+import           Formatting                   (int, sformat, (%))
+import           Text.LaTeX.Base              (ClassOption (FontSize, Paper), LaTeXT, Measure (Pt),
+                                               PaperType (A4), article, center, centering, comment,
+                                               document, documentclass, enumerate, item, large2,
+                                               large3, pagebreak, pagenumbering, protectText, raw,
+                                               textbf, textit, texttt, usepackage)
+import           Text.LaTeX.Base.Class        (LaTeXC, fromLaTeX, liftL)
+import           Text.LaTeX.Base.Syntax       (LaTeX(TeXComm, TeXEnv, TeXEmpty),
+                                               TeXArg(FixArg, MParArg, OptArg))
+import           Text.LaTeX.Packages.Inputenc (inputenc, utf8)
+import           Text.LaTeX.Packages.Graphicx (IGOption(IGWidth), includegraphics)
 
-import           HaskellRobot.Headers.CW1 (cw1taskHeads)
-import           HaskellRobot.Headers.CW2 (cw2taskHeads)
+import           HaskellRobot.Headers.CW1     (cw1taskHeads)
+import           HaskellRobot.Headers.CW2     (cw2taskHeads)
 
-cws :: [[Text]]
+cws :: Monad m => [[LaTeXT m ()]]
 cws = [cw1taskHeads, cw2taskHeads]
 
 -- variants begin * end
-varStart :: Int -> Int -> Text -> Text
-varStart cw i name = sformat ("\
-\%\n\
-\% Вариант " % int % "\n\
-\%\n\
-\\n\
-\\\begin{center}\n\
-\  \\textbf{\\LARGE{Вариант " % int % " (КР " % int % ")} \\\\}\n\
-\\n\
-\  " % stext % "\n\
-\\\end{center}\n\
-\\n\
-\Для каждого задания требуется также придумать несколько разумных тестов. \
-\Хорошие тесты могут улучшить оценку задания. Также требуется перед каждой задачей в комментарии писать текст задания \
-\(можно коротко, главное, чтобы было понятно, какое задание). Ваша контрольная работа должна быть \
-\оформлена как stack проект. Тесты пишите в соответствующем Main модуле. Их должно быть возможно запустить \
-\при помощи команды \\texttt{stack exec}. Требуется соблюдать все замечания к текущим домашним заданиям.\n\
-\\n\
-\\\begin{figure}[H]\n\
-\  \\centering\n\
-\  \\includegraphics[width=500pt]{images/bord3.png}\n\
-\\\end{figure}\n\n")
-    i i cw name
+varStart :: Monad m => Int -> Int -> Text -> LaTeXT m ()
+varStart cw i name = do
+    comment (sformat ("\n Вариант "%int%"\n\n") i); "\n"
+    center $ do
+        "\n"
+        "  "; textbf $ do
+            large3 $ raw $ sformat ("Вариант " % int % " (КР " % int % ")") i cw
+            " "; linebreak
+        "\n\n  "; raw $ protectText name; "\n"
+    "\n\n\
+     \Для каждого задания требуется также придумать несколько разумных тестов. \
+     \Хорошие тесты могут улучшить оценку задания. Также требуется перед каждой задачей в комментарии писать текст задания \
+     \(можно коротко, главное, чтобы было понятно, какое задание). Ваша контрольная работа должна быть \
+     \оформлена как stack проект. Тесты пишите в соответствующем Main модуле. Их должно быть возможно запустить \
+     \при помощи команды " <> texttt "stack exec" <> ". Требуется соблюдать все замечания к текущим домашним заданиям.\n\
+     \\n"
+    image "images/bord3.png"
 
-varEnd :: Text
-varEnd = "\
-\\\begin{figure}[H]\n\
-\  \\centering\n\
-\  \\includegraphics[width=500pt]{images/bord4.png}\n\
-\\\end{figure}\n\
-\\n\
-\\\pagebreak\n\n"
+varEnd :: Monad m => LaTeXT m ()
+varEnd = image "images/bord4.png" <> pagebreak "4" <> "\n\n"
 
--- variant list constants
-listStart :: Text
-listStart = "\\begin{enumerate}\n"
+image :: Monad m => String -> LaTeXT m ()
+image path = do
+    figureH $ do
+        "\n"
+        "  "; centering; "\n"
+        "  "; includegraphics [IGWidth $ Pt 500] path; "\n"
+    "\n\n"
+  where
+    figureH :: LaTeXC l => l -> l
+    figureH = liftL $ \content -> TeXEnv "figure" [ OptArg "H" ] content
 
-listEnd :: Text
-listEnd = "\\end{enumerate}\n\n"
+listOf :: Monad m => LaTeXT m () -> LaTeXT m ()
+listOf content = enumerate (content <> "\n") <> "\n\n"
 
-listItem :: Int -> Text
-listItem = sformat ("  \\item[" % int % ".]\n")
+listItem :: Monad m => Int -> LaTeXT m ()
+listItem i = "\n  " <> item (Just $ raw $ pack $ show i <> ".") <> "\n"
 
-taskPreamble :: Int -> Text
-taskPreamble i = sformat
-    (stext % "  \\textbf{\\textit{Условие:}}\n\n")
-    (listItem i)
+taskPreamble :: Monad m => Int -> LaTeXT m ()
+taskPreamble i = listItem i <> "  " <> textbf (textit "Условие:") <> "\n\n"
 
-taskProblemWord :: Text
-taskProblemWord = "  \\textbf{\\textit{Задача:}}\n\n"
+taskProblemWord :: Monad m => LaTeXT m ()
+taskProblemWord = "  " <> textbf (textit "Задача:") <> "\n\n"
 
 -- | Theory min specific header
-theoryMinStart :: Text -> Text
-theoryMinStart name = sformat ("\
-\\\begin{center}\n\
-\    \\textbf{\\Large{Теоретический минимум} \\\\}\n\
-\\n\
-\    "%stext%"\n\
-\\\end{center}\n\n")
-    name
+theoryMinStart :: Monad m => Text -> LaTeXT m ()
+theoryMinStart name = do
+    center $ title name
+    "\n\n"
+  where
+    title :: Monad m => Text -> LaTeXT m ()
+    title subtitle = do
+        "\n"
+        "    "; textbf (large2 "Теоретический минимум" <> " " <> linebreak); "\n\n"
+        "    "; raw $ protectText subtitle; "\n"
 
-theoryMinEnd :: Text
-theoryMinEnd = "\\pagebreak\n\n"
 
-frameBox :: Text
-frameBox = "\\framebox(500,60){}"
+theoryMinEnd :: Monad m => LaTeXT m ()
+theoryMinEnd = pagebreak "4" <> "\n\n"
 
--- tex document begin & end
-documentHeader :: Text
-documentHeader = "\\documentclass[11pt,a4paper]{article}\n\
-\\n\
-\\\usepackage{fullpage}\n\
-\\\usepackage[utf8]{inputenc}\n\
-\\\usepackage[russian]{babel}\n\
-\\\usepackage{graphicx}\n\
-\\\usepackage{float}\n\
-\\\usepackage[stable]{footmisc}\n\
-\\\usepackage{caption}\n\
-\\\usepackage{subcaption}\n\
-\\\usepackage{url}\n\
-\\\usepackage{amsmath}\n\
-\\\usepackage{amssymb}\n\
-\\\usepackage{listings}\n\
-\\n\
-\\\usepackage[margin=0.4in]{geometry}\n\
-\\n\
-\\\setlength\\parindent{0pt}\n\
-\\n\
-\\\pagenumbering{gobble}\n\
-\\n\
-\\\begin{document}\n\n"
+linebreak :: Monad m => LaTeXT m ()
+linebreak = raw "\\\\"
 
-documentEnd :: Text
-documentEnd = "\\end{document}"
+frameBox :: Monad m => LaTeXT m ()
+frameBox = fromLaTeX $ TeXComm "framebox" [MParArg ["500", "60"], FixArg TeXEmpty]
+
+documentOf :: Monad m => LaTeXT m () -> LaTeXT m ()
+documentOf content = do
+    documentclass [FontSize $ Pt 11, Paper A4] article; "\n"
+    "\n"
+    usepackage [] "fullpage"; "\n"
+    usepackage [utf8] inputenc; "\n"
+    usepackage ["russian"] "babel"; "\n"
+    usepackage [] "graphicx"; "\n"
+    usepackage [] "float"; "\n"
+    usepackage ["stable"] "footmisc"; "\n"
+    usepackage [] "caption"; "\n"
+    usepackage [] "subcaption"; "\n"
+    usepackage [] "url"; "\n"
+    usepackage [] "amsmath"; "\n"
+    usepackage [] "amssymb"; "\n"
+    usepackage [] "listings"; "\n"
+    "\n"
+    usepackage ["margin=0.4in"] "geometry"; "\n"
+    "\n"
+    raw "\\setlength\\parindent{0pt}\n"; "\n"
+    pagenumbering "gobble"; "\n"
+    "\n"
+    document ("\n\n" <> content)

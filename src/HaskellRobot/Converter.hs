@@ -8,57 +8,51 @@ module HaskellRobot.Converter
        , toTexTheoryMin
        ) where
 
+import           Data.Functor.Identity            (Identity)
 import           Data.Monoid                      (mconcat, (<>))
-import           Data.Text                        (Text)
-import           Formatting                       (sformat, stext, (%))
+import           Text.LaTeX.Base                  (LaTeX, LaTeXT, execLaTeXM, raw)
 
 import           HaskellRobot.Data.ReifiedStudent (ReifiedStudent (..))
 import           HaskellRobot.Data.Task           (Task (..))
-import           HaskellRobot.Headers.Common      (cws, documentEnd, documentHeader,
-                                                   frameBox, listEnd, listItem, listStart,
-                                                   taskPreamble, taskProblemWord,
-                                                   theoryMinEnd, theoryMinStart, varEnd,
-                                                   varStart)
+import           HaskellRobot.Headers.Common      (cws, listOf, listItem, taskPreamble,
+                                                   taskProblemWord, theoryMinEnd, theoryMinStart,
+                                                   varEnd, varStart, documentOf)
 
-type TexConverter = ReifiedStudent Task -> Text
+
+type TexConverter = ReifiedStudent Task -> LaTeXT Identity ()
 
 toTexCwVariant :: Int -> TexConverter
-toTexCwVariant cwNum ReifiedStudent{..} =
-    sformat (stext % stext % stext)
-            (varStart cwNum variant name)
-            taskList
-            varEnd
+toTexCwVariant cwNum ReifiedStudent{..} = do
+    varStart cwNum variant name
+    taskList
+    varEnd
   where
-    currentCw :: [Text]
+    currentCw :: Monad m => [LaTeXT m ()]
     currentCw = cws !! (cwNum - 1)
 
-    taskList :: Text
-    taskList = sformat (stext % stext % stext)
-                       listStart
-                       (mconcat $ zipWith toProblem [1..] tasks)
-                       listEnd
+    taskList :: Monad m => LaTeXT m ()
+    taskList = listOf (mconcat $ zipWith toProblem [1..] tasks)
 
-    toProblem :: Int -> Task -> Text
-    toProblem i Task{..} =
-        sformat (stext % stext % stext % stext % "\n")
-                (taskPreamble i)
-                taskHeader
-                taskProblemWord
-                taskContent
+    toProblem :: Monad m => Int -> Task -> LaTeXT m ()
+    toProblem i Task{..} = do
+        taskPreamble i
+        taskHeader
+        taskProblemWord
+        raw taskContent
       where
         taskHeader = currentCw !! (i - 1)
 
 toTexTheoryMin :: TexConverter
-toTexTheoryMin ReifiedStudent{..} = theoryMinStart name <> taskList <> theoryMinEnd
+toTexTheoryMin ReifiedStudent{..} = do
+    theoryMinStart name
+    taskList
+    theoryMinEnd
   where
-    taskList :: Text
-    taskList = listStart <> mconcat (zipWith toProblem [1..] tasks) <> listEnd
+    taskList :: Monad m => LaTeXT m ()
+    taskList = listOf (mconcat (zipWith toProblem [1..] tasks))
 
-    toProblem :: Int -> Task -> Text
-    toProblem i Task{..} = listItem i <> taskContent <> "\n"
+    toProblem :: Monad m => Int -> Task -> LaTeXT m ()
+    toProblem i Task{..} = listItem i <> raw taskContent
 
-toTexFile :: TexConverter -> [ReifiedStudent Task] -> Text
-toTexFile toTex vars = sformat (stext % stext % stext)
-                               documentHeader
-                               (mconcat $ map toTex vars)
-                               documentEnd
+toTexFile :: TexConverter -> [ReifiedStudent Task] -> LaTeX
+toTexFile toTex vars = execLaTeXM $ documentOf (mconcat $ map toTex vars)
