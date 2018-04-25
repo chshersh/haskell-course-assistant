@@ -5,7 +5,7 @@ import           Data.List              (find, intercalate)
 import           Data.Monoid            ((<>))
 import           Options.Applicative    (Parser, ParserInfo, ReadM, action, argument, command,
                                          completeWith, eitherReader, execParser, fullDesc, help,
-                                         helper, info, metavar, progDesc, str, subparser)
+                                         helper, hsubparser, info, metavar, progDesc, str)
 
 import           HaskellRobot.Converter (TexConverter, toTexCwVariant, toTexTheoryMin)
 import           HaskellRobot.Runner    (TaskContext (..), generateTexFile)
@@ -66,7 +66,7 @@ parserInfoGenerate = info parserGenerate
    <> progDesc "Generate LaTeX document of type TYPE" )
 
 parserAll :: Parser Command
-parserAll = subparser
+parserAll = hsubparser
     (
         command "generate" (info (Generate <$> parserGenerate) (progDesc "Generate LaTeX document"))
     )
