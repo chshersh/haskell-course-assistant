@@ -22,6 +22,7 @@ library
                        , HaskellRobot.Headers.CW1
                        , HaskellRobot.Headers.CW2
 
+                       , HaskellRobot.Parsers.Common
                        , HaskellRobot.Parsers.People
                        , HaskellRobot.Parsers.Tasks
 
@@ -48,6 +49,7 @@ executable assistant
   build-depends:       base
                      , formatting
                      , haskell-course-assistant
+                     , optparse-applicative
                      , text
   default-language:    Haskell2010
   default-extensions:  RecordWildCards
