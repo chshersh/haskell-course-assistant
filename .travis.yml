@@ -10,6 +10,15 @@ cache:
   - "$HOME/.stack"
   - "$HOME/build/NatalyaSlepkova/haskell-course-assistant/.stack-work"
 
+matrix:
+  include:
+
+  - ghc: 8.2.2
+    env: GHCVER='8.2.2' STACK_YAML="$HOME/build/NatalyaSlepkova/haskell-course-assistant/stack.yaml"
+
+  - ghc: 8.4.2
+    env: GHCVER='8.4.2' STACK_YAML="$HOME/build/NatalyaSlepkova/haskell-course-assistant/stack-$GHCVER.yaml"
+    
 addons:
   apt:
     sources:
