@@ -1,4 +1,4 @@
-sudo: false
+sudo: true
 
 language: generic
 
@@ -12,9 +12,10 @@ addons:
       - libgmp-dev
 
 before_install:
-- mkdir -p ~/.local/bin
-- export PATH=$HOME/.local/bin:$PATH
-- travis_retry curl -L https://get.haskellstack.org/stable/linux-x86_64.tar.gz | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+  - mkdir -p ~/.local/bin
+  - export PATH="$HOME/.local/bin:$PATH"
+  - travis_retry curl -L 'https://www.stackage.org/stack/linux-x86_64' | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+  - stack --version
 
 install:
 - stack --no-terminal --install-ghc test --only-dependencies
