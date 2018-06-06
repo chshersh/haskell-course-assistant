@@ -2,12 +2,17 @@ sudo: true
 
 language: generic
 
+git:
+  depth: 5
+  
 cache:
   directories:
   - $HOME/.stack
 
 addons:
   apt:
+    sources:
+      - sourceline: 'ppa:hvr/ghc'
     packages:
       - libgmp-dev
 
