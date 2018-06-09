@@ -8,13 +8,13 @@ git:
 cache:
   directories:
   - "$HOME/.stack"
-  - "$HOME/build/NatalyaSlepkova/haskell-course-assistant/.stack-work"
+  - "$HOME/build/ChShersh/haskell-course-assistant/.stack-work"
 
 matrix:
   include:
 
   - ghc: 8.2.2
-    env: GHCVER='8.2.2' STACK_YAML="$HOME/build/NatalyaSlepkova/haskell-course-assistant/stack.yaml"
+    env: GHCVER='8.2.2' STACK_YAML="$HOME/build/ChShersh/haskell-course-assistant/stack.yaml"
     
 addons:
   apt:
