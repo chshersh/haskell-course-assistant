@@ -1,4 +1,4 @@
-sudo: true
+sudo: false
 
 language: haskell
 
@@ -30,7 +30,11 @@ before_install:
   - stack --version
 
 install:
-- stack --no-terminal --install-ghc test --only-dependencies
+  - travis_wait 30 stack setup --no-terminal
+  - stack ghc -- --version
+
+  - travis_wait 40 stack build --only-dependencies --no-terminal
+  - travis_wait 40 stack build --test --bench --haddock --no-run-tests --no-run-benchmarks --no-haddock-deps --no-terminal
 
 script:
-- stack --no-terminal test --haddock --no-haddock-deps
+  - travis_wait 40 stack build --test --no-terminal
