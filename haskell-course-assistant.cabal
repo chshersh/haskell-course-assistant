@@ -36,6 +36,7 @@ library
                        , MonadRandom
                        , random
                        , text
+                       , HaTeX
   default-language:    Haskell2010
   ghc-options:         -Wall -fno-warn-orphans
   default-extensions:  RecordWildCards

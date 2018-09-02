@@ -10,6 +10,7 @@ import           Data.Text                        (Text)
 import           Data.Text.IO                     (putStrLn, readFile, writeFile)
 import           Formatting                       (int, sformat, (%))
 import           System.FilePath                  (takeFileName, (<.>), (</>))
+import           Text.LaTeX.Base                  (render)
 import           Text.Megaparsec                  (parse)
 
 import           HaskellRobot.Converter           (TexConverter, toTexFile)
@@ -48,7 +49,7 @@ generateTexFile TaskContext{..} = do
 
     variants <- evalRandIO $ assignRandomTasks students parsedTasks
     putStrLn "Tasks assigned!"
-    let texVariants = toTexFile texConverter variants
+    let texVariants = render $ toTexFile texConverter variants
 
     -- TODO: check if directory exist
     let outputFileName = outputFolder </> takeFileName tasksFileName <.> "tex"
